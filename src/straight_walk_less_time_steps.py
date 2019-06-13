@@ -44,8 +44,15 @@ def Rz(t):
 
 
 def find_angles( x,xa,h,ha ):
-    t1= 2*np.arctan((60*(x - xa))/float(h**2 - 2*h*ha + 30*h + ha**2 - 30*ha + x**2 - 2*x*xa + xa**2) + (30*xa - 30*x + (-(h**2 - 2*h*ha + ha**2 + x**2 - 2*x*xa + xa**2)*(h**2 - 2*h*ha + ha**2 + x**2 - 2*x*xa + xa**2 - 900))**(1/2))/float(h**2 - 2*h*ha + 30*h + ha**2 - 30*ha + x**2 - 2*x*xa + xa**2))
-    t2= -2*np.arctan((30*xa - 30*x + (-(h**2 - 2*h*ha + ha**2 + x**2 - 2*x*xa + xa**2)*(h**2 - 2*h*ha + ha**2 + x**2 - 2*x*xa + xa**2 - 900))**(1/2))/float(h**2 - 2*h*ha + 30*h + ha**2 - 30*ha + x**2 - 2*x*xa + xa**2))
+    # t1= 2*np.arctan((60*(x - xa))/float(h**2 - 2*h*ha + 30*h + ha**2 - 30*ha + x**2 - 2*x*xa + xa**2) + (30*xa - 30*x + (-(h**2 - 2*h*ha + ha**2 + x**2 - 2*x*xa + xa**2)*(h**2 - 2*h*ha + ha**2 + x**2 - 2*x*xa + xa**2 - 900))**(1/2))/float(h**2 - 2*h*ha + 30*h + ha**2 - 30*ha + x**2 - 2*x*xa + xa**2))
+    # t2= -2*np.arctan((30*xa - 30*x + (-(h**2 - 2*h*ha + ha**2 + x**2 - 2*x*xa + xa**2)*(h**2 - 2*h*ha + ha**2 + x**2 - 2*x*xa + xa**2 - 900))**(1/2))/float(h**2 - 2*h*ha + 30*h + ha**2 - 30*ha + x**2 - 2*x*xa + xa**2))
+    
+    m = (((xa-x)**2+(ha-h)**2)**(0.5))/2
+    theta = np.arctan((xa-x)/(ha-h))
+    phi = np.arccos(m/15)
+    
+    t2 = -theta - phi
+    t1 = -theta + phi
     return t1, t2
 
 def find_arm( point,angles,m ):
@@ -137,27 +144,27 @@ def plot2_final(rleg,lleg,waist,ra,la, zmp):
 def get_angles(waist, rleg, lleg):
     msg = Servo_Msg()
 
-    r_foot_28 = np.arctan((rleg[0,4] - rleg[0,3])/(rleg[2,4] - rleg[2,3]))
-    l_foot_28 = np.arctan((lleg[0,4] - lleg[0,3])/(lleg[2,4] - lleg[2,3]))
-    r_foot_64 = np.arctan((rleg[1,4] - rleg[1,3])/(rleg[2,4] - rleg[2,3]))
-    l_foot_64 = np.arctan((lleg[1,4] - lleg[1,3])/(lleg[2,4] - lleg[2,3]))
-    r_hip_64 = np.arctan((rleg[1,2] - rleg[1,3])/(rleg[2,2] - rleg[2,3]))
-    l_hip_64 = np.arctan((lleg[1,2] - lleg[1,3])/(lleg[2,2] - lleg[2,3]))
-    r_hip_28 = r_foot_64
-    l_hip_28 = l_foot_64
-    l_knee   = np.arctan((((lleg[0,2] - lleg[0,3])**2 + (lleg[1,2] - lleg[1,3])**2)**(0.5))/(((lleg[1,2] - lleg[1,3])**2 + (lleg[2,2] - lleg[2,3])**2)**(0.5))) + np.arctan((((lleg[0,3] - lleg[0,4])**2 + (lleg[1,3] - lleg[1,4])**2)**(0.5))/(((lleg[1,3] - lleg[1,4])**2 + (lleg[2,3] - lleg[2,4])**2)**(0.5)))
-    r_knee   = np.arctan((((rleg[0,2] - rleg[0,3])**2 + (rleg[1,2] - rleg[1,3])**2)**(0.5))/(((rleg[1,2] - rleg[1,3])**2 + (rleg[2,2] - rleg[2,3])**2)**(0.5))) + np.arctan((((rleg[0,3] - rleg[0,4])**2 + (rleg[1,3] - rleg[1,4])**2)**(0.5))/(((rleg[1,3] - rleg[1,4])**2 + (rleg[2,3] - rleg[2,4])**2)**(0.5)))
+    r_foot_28 = temp_left_joint_angles[2,0]
+    l_foot_28 = -temp_right_joint_angles[2,0]
+    r_foot_64 = temp_right_joint_angles[0,0]
+    l_foot_64 = temp_left_joint_angles[0,0]
+    r_hip_64 = -temp_left_joint_angles[1,0]
+    l_hip_64 = temp_right_joint_angles[1,0]
+    r_hip_28 = temp_right_joint_angles[0,0]
+    l_hip_28 = temp_left_joint_angles[0,0]
+    l_knee   = -temp_right_joint_angles[2,0] + temp_right_joint_angles[1,0]
+    r_knee   = -temp_left_joint_angles[2,0] + temp_left_joint_angles[1,0]
 
     msg.id1  = int(l_knee*4095/(2*np.pi))
-    msg.id2  = -int(l_hip_64*4095/(2*np.pi))
+    msg.id2  = int(l_hip_64*4095/(2*np.pi))
     msg.id9  = int(r_foot_64*4095/(2*np.pi))
-    msg.id11 = -int(l_hip_28*4095/(2*np.pi))
-    msg.id12 = -int(r_foot_28*4095/(2*np.pi))
+    msg.id11 = int(l_hip_28*4095/(2*np.pi))
+    msg.id12 = int(r_foot_28*4095/(2*np.pi))
     msg.id13 = int(r_knee*4095/(2*np.pi))
     msg.id14 = int(l_foot_28*4095/(2*np.pi))
-    msg.id15 = -int(r_hip_28*4095/(2*np.pi))
+    msg.id15 = int(r_hip_28*4095/(2*np.pi))
     msg.id16 = int(l_foot_64*4095/(2*np.pi))
-    msg.id17 = -int(r_hip_64*4095/(2*np.pi))
+    msg.id17 = int(r_hip_64*4095/(2*np.pi))
 
     return msg
 
@@ -176,7 +183,7 @@ def simulate():
     for t in range(11):       #%start
         if (t>-1) and (t<2):
             centre_pelvis[0,0]=3
-            centre_pelvis[1,0]= -3*t+5
+            centre_pelvis[1,0]= -5*t+5
             xa=3
             height_ankle = 0
             centre_pelvis[2,0]= h*np.cos(np.arctan((centre_pelvis[1,0]-5)/h))+1
@@ -186,14 +193,14 @@ def simulate():
             left_hand_angles[2,0]= 16*np.pi/180
         elif (t>1) and (t<4):
             centre_pelvis[0,0]=3
-            centre_pelvis[1,0]=2
+            centre_pelvis[1,0]=0
             xa=3
             height_ankle = (t-1)/2*(4.14)
             centre_pelvis[2,0]= h*np.cos(np.arctan((centre_pelvis[1,0]-5)/h))+1+(0.18)*(t-2)
         elif (t>3) and (t<9):
             centre_pelvis[0,0] =  t/4+2
             x=centre_pelvis[0,0]
-            centre_pelvis[1,0] = 2
+            centre_pelvis[1,0] = 0
             xa = (3/2)*(t+4) - 9
             height_ankle = -0.005*(xa+20)*(xa+3)*(xa-9)
             centre_pelvis[2,0]=1 - 0.1*(x-4)*(x-2)*(x-1.2) + h*np.cos(np.arctan(5/h))
@@ -203,7 +210,7 @@ def simulate():
             left_hand_angles[2,0]= 16*np.pi/180+2*(t-4)/4*np.pi/180
         else:
             centre_pelvis[0,0]= t-4
-            centre_pelvis[1,0]= 2+3*(t-8)/4
+            centre_pelvis[1,0]= 0+5*(t-8)/4
             xa=9
             height_ankle=0
             centre_pelvis[2,0]= h*np.cos(np.arctan((centre_pelvis[1,0]-5)/h))+1
@@ -239,14 +246,14 @@ def simulate():
         for t in range(9):    #%left leg as swing one
             if (t>-1) and (t<2):     #%dsp1
                 centre_pelvis[0,0] = 2*t
-                centre_pelvis[1,0] = 3*(t)+5
+                centre_pelvis[1,0] = 5*(t)+5
                 xa = -3
                 height_ankle = 0
                 centre_pelvis[2,0] =h*np.cos(np.arctan((centre_pelvis[1,0]-5)/h))+1
             elif (t>1) and (t<6):   #%ssp
                 centre_pelvis[0,0] = 1 + t/2
                 x=centre_pelvis[0,0]
-                centre_pelvis[1,0] = 8
+                centre_pelvis[1,0] = 10
                 xa = (3)*t - 9
                 height_ankle = -0.005*(xa+20)*(xa+3)*(xa-9)
                 centre_pelvis[2,0]=1 - 0.1*(x-4)*(x-2)*(x-1.2) + h*np.cos(np.arctan((centre_pelvis[1,0]-5)/h))
@@ -256,7 +263,7 @@ def simulate():
                 left_hand_angles[2,0]= 18*np.pi/180-4*(t-2)/4*np.pi/180
             else:                       #%dsp2
                 centre_pelvis[0,0] = t -2
-                centre_pelvis[1,0] = 8-3*(t-6)/2
+                centre_pelvis[1,0] = 10-5*(t-6)/2
                 xa = 9
                 height_ankle = 0
                 centre_pelvis[2,0]=1+h*np.cos(np.arctan((centre_pelvis[1,0]-5)/h))
@@ -291,14 +298,14 @@ def simulate():
         for t in range(9):                     #%swing leg as right leg
             if (t>-1) and (t<2):        
                 centre_pelvis[0,0] = t*2
-                centre_pelvis[1,0] = -3*(t)+5
+                centre_pelvis[1,0] = -5*(t)+5
                 xa = -3
                 height_ankle = 0
                 centre_pelvis[2,0] =h*np.cos(np.arctan((centre_pelvis[1,0]-5)/h))+1
             elif (t>1) and (t<6):
                 centre_pelvis[0,0] = 1 + t/2
                 x=centre_pelvis[0,0]
-                centre_pelvis[1,0] = 2
+                centre_pelvis[1,0] = 0
                 xa = 3*t - 9
                 height_ankle = -0.005*(xa+20)*(xa+3)*(xa-9)
                 centre_pelvis[2,0]= -0.1*(x-4)*(x-2)*(x-1.2) + h*np.cos(np.arctan((centre_pelvis[1,0]-5)/h))+1
@@ -308,7 +315,7 @@ def simulate():
                 left_hand_angles[2,0]= 14*np.pi/180+4*(t-2)/4*np.pi/180
             else:
                 centre_pelvis[0,0] = t-2
-                centre_pelvis[1,0] = 2+3*(t-6)/2
+                centre_pelvis[1,0] = 0+5*(t-6)/2
                 xa = 9
                 height_ankle = 0
                 centre_pelvis[2,0]=h*np.cos(np.arctan((centre_pelvis[1,0]-5)/h))+1
