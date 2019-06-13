@@ -24,7 +24,7 @@ right_joint_angles=np.matrix(np.zeros((6,1)))
 temp_right_joint_angles=np.matrix(np.zeros((3,1)))
 centre_pelvis=np.matrix(np.zeros((4,1)))
 theta=0
-no_of_steps=4
+no_of_steps=2
 right_hand_angles=np.matrix(np.zeros((4,1)))
 left_hand_angles=np.matrix(np.zeros((4,1)))
 right_arm=np.matrix(np.zeros((4,5)))
@@ -149,15 +149,15 @@ def get_angles(waist, rleg, lleg):
     r_knee   = np.arctan((((rleg[0,2] - rleg[0,3])**2 + (rleg[1,2] - rleg[1,3])**2)**(0.5))/(((rleg[1,2] - rleg[1,3])**2 + (rleg[2,2] - rleg[2,3])**2)**(0.5))) + np.arctan((((rleg[0,3] - rleg[0,4])**2 + (rleg[1,3] - rleg[1,4])**2)**(0.5))/(((rleg[1,3] - rleg[1,4])**2 + (rleg[2,3] - rleg[2,4])**2)**(0.5)))
 
     msg.id1  = int(l_knee*4095/(2*np.pi))
-    msg.id2  = int(l_hip_64*4095/(2*np.pi))
+    msg.id2  = -int(l_hip_64*4095/(2*np.pi))
     msg.id9  = int(r_foot_64*4095/(2*np.pi))
-    msg.id11 = int(l_hip_28*4095/(2*np.pi))
-    msg.id12 = int(r_foot_28*4095/(2*np.pi))
+    msg.id11 = -int(l_hip_28*4095/(2*np.pi))
+    msg.id12 = -int(r_foot_28*4095/(2*np.pi))
     msg.id13 = int(r_knee*4095/(2*np.pi))
     msg.id14 = int(l_foot_28*4095/(2*np.pi))
-    msg.id15 = int(r_hip_28*4095/(2*np.pi))
+    msg.id15 = -int(r_hip_28*4095/(2*np.pi))
     msg.id16 = int(l_foot_64*4095/(2*np.pi))
-    msg.id17 = int(r_hip_64*4095/(2*np.pi))
+    msg.id17 = -int(r_hip_64*4095/(2*np.pi))
 
     return msg
 

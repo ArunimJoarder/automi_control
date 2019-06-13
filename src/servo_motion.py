@@ -10,7 +10,7 @@ from dynamixel_sdk import *
 ADDR_MX_TORQUE_ENABLE           = 64
 ADDR_MX_PROFILE_VELOCITY        = 112
 ADDR_MX_PROFILE_ACCELERATION    = 108
-ADDR_MX_GOAL_POSTION            = 116
+ADDR_MX_GOAL_POSITION            = 116
 ADDR_MX_MOVING                  = 122
 ADDR_MX_P_GAIN_POSITION         = 84
 
@@ -87,17 +87,18 @@ def write_pos(goal_pos):
     groupSyncWrite.clearParam()
 
 def callback(data):
-    goal_pos = []*10
-    goal_pos[0] = data.id1
-    goal_pos[1] = data.id2
-    goal_pos[2] = data.id9
-    goal_pos[3] = data.id11
-    goal_pos[4] = data.id12
-    goal_pos[5] = data.id13
-    goal_pos[6] = data.id14
-    goal_pos[7] = data.id15
-    goal_pos[8] = data.id16
-    goal_pos[9] = data.id17
+    goal_pos = [0]*0
+    goal_pos.append(data.id1)
+    goal_pos.append(data.id2)
+    goal_pos.append(data.id9)
+    goal_pos.append(data.id11)
+    goal_pos.append(data.id12)
+    goal_pos.append(data.id13)
+    goal_pos.append(data.id14)
+    goal_pos.append(data.id15)
+    goal_pos.append(data.id16)
+    goal_pos.append(data.id17)
+
 
     write_pos(goal_pos)
 
