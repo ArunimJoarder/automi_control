@@ -141,7 +141,7 @@ def plot2_final(rleg,lleg,waist,ra,la, zmp):
    
     return
 
-def get_angles(waist, rleg, lleg):
+def get_angles(pos):
     msg = Servo_Msg()
 
     r_foot_28 = temp_left_joint_angles[2,0]
@@ -156,15 +156,15 @@ def get_angles(waist, rleg, lleg):
     r_knee   = -temp_left_joint_angles[2,0] + temp_left_joint_angles[1,0]
 
     msg.id1  = int(l_knee*4095/(2*np.pi))
-    msg.id2  = int(l_hip_64*4095/(2*np.pi))
+    msg.id2  = int(l_hip_64*4095/(2*np.pi)) + 100
     msg.id9  = int(r_foot_64*4095/(2*np.pi))
-    msg.id11 = int(l_hip_28*4095/(2*np.pi))
+    msg.id11 = int(l_hip_28*4095/(2*np.pi)) - pos*50
     msg.id12 = int(r_foot_28*4095/(2*np.pi))
     msg.id13 = int(r_knee*4095/(2*np.pi))
     msg.id14 = int(l_foot_28*4095/(2*np.pi))
-    msg.id15 = int(r_hip_28*4095/(2*np.pi))
+    msg.id15 = int(r_hip_28*4095/(2*np.pi)) + pos*50
     msg.id16 = int(l_foot_64*4095/(2*np.pi))
-    msg.id17 = int(r_hip_64*4095/(2*np.pi))
+    msg.id17 = int(r_hip_64*4095/(2*np.pi)) - 100
 
     return msg
 
@@ -182,6 +182,7 @@ def simulate():
 
     for t in range(11):       #%start
         if (t>-1) and (t<2):
+            pos = 0
             centre_pelvis[0,0]=3
             centre_pelvis[1,0]= -5*t+5
             xa=3
@@ -192,12 +193,14 @@ def simulate():
             left_hand_angles[0,0]= -3*np.pi/180
             left_hand_angles[2,0]= 16*np.pi/180
         elif (t>1) and (t<4):
+            pos = 1
             centre_pelvis[0,0]=3
             centre_pelvis[1,0]=0
             xa=3
             height_ankle = (t-1)/2*(4.14)
             centre_pelvis[2,0]= h*np.cos(np.arctan((centre_pelvis[1,0]-5)/h))+1+(0.18)*(t-2)
         elif (t>3) and (t<9):
+            pos = 1
             centre_pelvis[0,0] =  t/4+2
             x=centre_pelvis[0,0]
             centre_pelvis[1,0] = 0
@@ -209,6 +212,7 @@ def simulate():
             left_hand_angles[0,0]= -3*np.pi/180+9*(t-4)/4*np.pi/180
             left_hand_angles[2,0]= 16*np.pi/180+2*(t-4)/4*np.pi/180
         else:
+            pos = 0
             centre_pelvis[0,0]= t-4
             centre_pelvis[1,0]= 0+5*(t-8)/4
             xa=9
@@ -234,7 +238,7 @@ def simulate():
         zmp[:,0] = waist[:,1]
         zmp[2,0] = 0
 
-        msg = get_angles(waist, right_leg, left_leg)
+        msg = get_angles(pos)
         publish(msg)
         
         plot2_final(left_leg,right_leg,waist,right_arm,left_arm, zmp)
@@ -245,15 +249,17 @@ def simulate():
     for m in range(no_of_steps):
         for t in range(9):    #%left leg as swing one
             if (t>-1) and (t<2):     #%dsp1
+                pos = 0
                 centre_pelvis[0,0] = 2*t
-                centre_pelvis[1,0] = 5*(t)+5
+                centre_pelvis[1,0] = 6*(t)+5
                 xa = -3
                 height_ankle = 0
                 centre_pelvis[2,0] =h*np.cos(np.arctan((centre_pelvis[1,0]-5)/h))+1
             elif (t>1) and (t<6):   #%ssp
+                pos = 1
                 centre_pelvis[0,0] = 1 + t/2
                 x=centre_pelvis[0,0]
-                centre_pelvis[1,0] = 10
+                centre_pelvis[1,0] = 11
                 xa = (3)*t - 9
                 height_ankle = -0.005*(xa+20)*(xa+3)*(xa-9)
                 centre_pelvis[2,0]=1 - 0.1*(x-4)*(x-2)*(x-1.2) + h*np.cos(np.arctan((centre_pelvis[1,0]-5)/h))
@@ -262,8 +268,9 @@ def simulate():
                 left_hand_angles[0,0]= 6*np.pi/180-18*(t-2)/4*np.pi/180
                 left_hand_angles[2,0]= 18*np.pi/180-4*(t-2)/4*np.pi/180
             else:                       #%dsp2
+                pos = 0
                 centre_pelvis[0,0] = t -2
-                centre_pelvis[1,0] = 10-5*(t-6)/2
+                centre_pelvis[1,0] = 11-6*(t-6)/2
                 xa = 9
                 height_ankle = 0
                 centre_pelvis[2,0]=1+h*np.cos(np.arctan((centre_pelvis[1,0]-5)/h))
@@ -286,7 +293,7 @@ def simulate():
             zmp[:,0] = waist[:,1]
             zmp[2,0] = 0
             
-            msg = get_angles(waist, right_leg, left_leg)
+            msg = get_angles(pos)
             publish(msg)
 
             plot2_final(left_leg,right_leg,waist,right_arm,left_arm, zmp)
@@ -297,12 +304,14 @@ def simulate():
         
         for t in range(9):                     #%swing leg as right leg
             if (t>-1) and (t<2):        
+                pos = 0
                 centre_pelvis[0,0] = t*2
                 centre_pelvis[1,0] = -5*(t)+5
                 xa = -3
                 height_ankle = 0
                 centre_pelvis[2,0] =h*np.cos(np.arctan((centre_pelvis[1,0]-5)/h))+1
             elif (t>1) and (t<6):
+                pos = 1
                 centre_pelvis[0,0] = 1 + t/2
                 x=centre_pelvis[0,0]
                 centre_pelvis[1,0] = 0
@@ -314,6 +323,7 @@ def simulate():
                 left_hand_angles[0,0]= -12*np.pi/180+18*(t-2)/4*np.pi/180
                 left_hand_angles[2,0]= 14*np.pi/180+4*(t-2)/4*np.pi/180
             else:
+                pos = 0
                 centre_pelvis[0,0] = t-2
                 centre_pelvis[1,0] = 0+5*(t-6)/2
                 xa = 9
@@ -338,7 +348,7 @@ def simulate():
             zmp[:,0] = waist[:,1]
             zmp[2,0] = 0
             
-            msg = get_angles(waist, right_leg, left_leg)
+            msg = get_angles(pos)
             publish(msg)
             
             plot2_final(left_leg,right_leg,waist,right_arm,left_arm, zmp)            

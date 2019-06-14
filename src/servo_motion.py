@@ -29,8 +29,8 @@ num_dxl     = 10
 DXL_ID      = [1,2,9,11,12,13,14,15,16,17]
 
 TORQUE_ENABLE           = 1
-PROFILE_VELOCITY        = 900
-PROFILE_ACCELERATION    = 400
+PROFILE_VELOCITY        = 800
+PROFILE_ACCELERATION    = 300
 P_GAIN_POSITION         = 1500
 #----------------------------------------------------------------------------#
 
